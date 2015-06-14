@@ -115,6 +115,15 @@ test_that("stat-bin2d", {
                       y = scale_y_continuous(limits = range(d$depth, na.rm=TRUE)))
   ret <- test_stat_scale(stat_bin2d(aes(x = carat, y = depth), data=d), full_scales)
   expect_equal(dim(ret), c(191,12))
+
+  breaks <- list(x = seq(min(d$carat, na.rm=TRUE),
+                         max(d$carat, na.rm=TRUE), length.out=41),
+                 y = NA)
+  ret <- test_stat_scale(stat_bin2d(aes(x = carat, y = depth),
+                                    data=d, breaks=breaks), full_scales)
+  expect_equal(length(levels(ret$xbin)), 40)
+  expect_equal(length(levels(ret$ybin)), 31)
+  expect_equal(dim(ret), c(230,12))
 })
 
 
