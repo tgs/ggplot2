@@ -118,12 +118,36 @@ test_that("stat-bin2d", {
 
   breaks <- list(x = seq(min(d$carat, na.rm=TRUE),
                          max(d$carat, na.rm=TRUE), length.out=41),
-                 y = NA)
+                 y = NULL)
   ret <- test_stat_scale(stat_bin2d(aes(x = carat, y = depth),
                                     data=d, breaks=breaks), full_scales)
   expect_equal(length(levels(ret$xbin)), 40)
   expect_equal(length(levels(ret$ybin)), 31)
   expect_equal(dim(ret), c(230,12))
+})
+
+test_that(
+  "stat_bin2d(breaks=...)",
+{
+  df <- data.frame(x = 0:3, y = 0:3)
+
+  g <- ggplot(df, aes(x, y))
+
+  expected <- ggplot_build(g + stat_bin2d())$data[[1]]
+
+  default_breaks <- seq(0, 3, length.out=31)
+
+  breaks_to_try <- list(
+    list(x = default_breaks, y = default_breaks),
+    list(x = default_breaks, y = NULL),
+    list(x = NULL, y = default_breaks),
+    list(x = NULL, y = NULL))
+
+  for (breaks in breaks_to_try) {
+    got <- ggplot_build(g + stat_bin2d(breaks = breaks))$data[[1]]
+
+    expect_equal(got, expected)
+  }
 })
 
 

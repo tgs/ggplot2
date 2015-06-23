@@ -80,20 +80,21 @@ StatBin2d <- proto(Stat, {
 
     # Determine breaks, if omitted
     if (is.null(breaks)) {
-      breaks <- list(x = NA, y = NA)
+      breaks <- list(x = NULL, y = NULL)
     }
-    if (anyNA(breaks[1], recursive=FALSE)) {
-      breaks[[1]] <- seq(origin[1], max(range$x) + binwidth[1], binwidth[1])
+
+    stopifnot(length(breaks) == 2)
+    names(breaks) <- c("x", "y")
+
+    if (is.null(breaks$x)) {
+      breaks$x <- seq(origin[1], max(range$x) + binwidth[1], binwidth[1])
     }
-    if (anyNA(breaks[2], recursive=FALSE)) {
-      breaks[[2]] <- seq(origin[2], max(range$y) + binwidth[2], binwidth[2])
+    if (is.null(breaks$y)) {
+      breaks$y <- seq(origin[2], max(range$y) + binwidth[2], binwidth[2])
     }
 
     stopifnot(is.list(breaks))
-    stopifnot(length(breaks) == 2)
     stopifnot(all(sapply(breaks, is.numeric)))
-
-    names(breaks) <- c("x", "y")
 
     xbin <- cut(data$x, sort(breaks$x), include.lowest = TRUE)
     ybin <- cut(data$y, sort(breaks$y), include.lowest = TRUE)
